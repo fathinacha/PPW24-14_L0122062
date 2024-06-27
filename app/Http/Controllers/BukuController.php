@@ -26,9 +26,28 @@ class BukuController extends Controller
             'penulis' => 'required',
             'penerbit' => 'required',
             'tahun_terbit' => 'required|integer',
+            'gambar' => 'image|mimes:jpeg,png,jpg|max:2048' // tambahkan validasi untuk gambar
         ]);
 
-        Buku::create($request->all());
+        // Proses penyimpanan gambar
+        if ($request->hasFile('gambar')) {
+            $gambar = $request->file('gambar');
+            $nama_gambar = time() . '.' . $gambar->getClientOriginalExtension();
+            $gambar->storeAs('public/buku', $nama_gambar); // simpan di folder storage/app/public/buku
+
+            // Simpan informasi buku beserta nama gambar ke database
+            Buku::create([
+                'judul' => $request->judul,
+                'penulis' => $request->penulis,
+                'penerbit' => $request->penerbit,
+                'tahun_terbit' => $request->tahun_terbit,
+                'gambar' => $nama_gambar, // simpan nama gambar ke database
+            ]);
+        } else {
+            // Simpan informasi buku tanpa gambar
+            Buku::create($request->except('gambar'));
+        }
+
         return redirect()->route('bukus.index');
     }
 

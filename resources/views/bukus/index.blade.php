@@ -10,6 +10,7 @@
                 <th>Penulis</th>
                 <th>Penerbit</th>
                 <th>Tahun Terbit</th>
+                <th>Gambar</th>
                 <th>Aksi</th>
             </tr>
         </thead>
@@ -22,15 +23,30 @@
                     <td>{{ $buku->penerbit }}</td>
                     <td>{{ $buku->tahun_terbit }}</td>
                     <td>
+                        @if($buku->gambar)
+                        <img src="{{ asset('storage/' . $buku->gambar) }}" alt="Gambar {{ $buku->judul }}" style="max-width: 100px;">
+                        @else
+                            Belum ada gambar
+                        @endif
+                    </td>
+                    <td>
                         <a href="{{ route('bukus.edit', $buku->id) }}">Edit</a>
-                        <form action="{{ route('bukus.destroy', $buku->id) }}" method="POST" style="display:inline;">
+                        <form action="{{ route('bukus.destroy', $buku->id) }}" method="POST" style="display:inline;" class="delete-form">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" onclick="return confirm('Apakah Anda yakin ingin menghapus buku ini?')">Delete</button>
+                            <button type="submit" onclick="return confirmDelete()">Delete</button>
                         </form>
                     </td>
                 </tr>
             @endforeach
         </tbody>
     </table>
+@endsection
+
+@section('scripts')
+    <script type="text/javascript">
+        function confirmDelete() {
+            return confirm('Apakah Anda yakin ingin menghapus buku ini?');
+        }
+    </script>
 @endsection
